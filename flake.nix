@@ -17,14 +17,29 @@
           version = "0.1.0";
           src = ./.;
 
+          nativeBuildInputs = [
+            pkgs.deno
+            pkgs.installShellFiles
+          ];
+
+          buildPhase = ''
+            export DENO_DIR=/tmp/niks-deno-dir
+            mkdir -p $DENO_DIR
+
+            deno compile --import-map vendor/import_map.json \
+              --cached-only --allow-run -o niks cli.ts
+          '';
+
           installPhase = ''
-            mkdir -p $out/src $out/bin
-            cp -r *.ts $out/src
+            install -Dm755 -t $out/bin niks
+            runHook postInstall
+          '';
 
-            echo "#!${pkgs.bash}/bin/bash" >> $out/bin/niks
-            echo "DENO_NO_UPDATE_CHECK=1 ${pkgs.deno}/bin/deno run --allow-run $out/src/cli.ts \"\$@\"" >> $out/bin/niks
-
-            chmod +x $out/bin/niks
+          postInstall = ''
+            installShellCompletion --cmd niks          \
+              --bash <($out/bin/niks completions bash) \
+              --zsh <($out/bin/niks completions zsh)   \
+              --fish <($out/bin/niks completions fish) \
           '';
         };
 
@@ -40,7 +55,7 @@
       };
 
       devShells.default = pkgs.mkShell {
-        buildInputs = [pkgs.deno];
+        packages = [pkgs.deno];
       };
 
       formatter = pkgs.alejandra;
