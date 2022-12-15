@@ -10,7 +10,6 @@
       pkgs = import nixpkgs {
         inherit system;
       };
-      buildInputs = [pkgs.deno];
     in rec {
       packages = {
         niks = pkgs.stdenv.mkDerivation {
@@ -18,26 +17,14 @@
           version = "0.1.0";
           src = ./.;
 
-          inherit buildInputs;
-          nativeBuildInputs = [pkgs.installShellFiles];
-
-          buildPhase = ''
-            export DENO_DIR=/tmp/niks-deno-dir
-            mkdir -p $DENO_DIR
-
-            deno compile --allow-run -o niks cli.ts
-          '';
-
           installPhase = ''
-            install -Dm755 -t $out/bin niks
-            runHook postInstall
-          '';
+            mkdir -p $out/src $out/bin
+            cp -r *.ts $out/src
 
-          postInstall = ''
-            installShellCompletion --cmd niks \
-              --bash <($out/bin/niks completions bash) \
-              --zsh <($out/bin/niks completions zsh) \
-              --fish <($out/bin/niks completions fish)
+            echo "#!${pkgs.bash}/bin/bash" > $out/bin/niks
+            echo "${pkgs.deno}/bin/deno run --allow-run $out/src/cli.ts" > $out/bin/niks
+
+            chmod +x $out/bin/niks
           '';
         };
 
@@ -53,7 +40,7 @@
       };
 
       devShells.default = pkgs.mkShell {
-        inherit buildInputs;
+        buildInputs = [pkgs.deno];
       };
 
       formatter = pkgs.alejandra;
