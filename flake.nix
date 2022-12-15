@@ -21,8 +21,8 @@
             mkdir -p $out/src $out/bin
             cp -r *.ts $out/src
 
-            echo "#!${pkgs.bash}/bin/bash" > $out/bin/niks
-            echo "${pkgs.deno}/bin/deno run --allow-run $out/src/cli.ts" > $out/bin/niks
+            echo "#!${pkgs.bash}/bin/bash" >> $out/bin/niks
+            echo "${pkgs.deno}/bin/deno run --allow-run $out/src/cli.ts \"\$@\"" >> $out/bin/niks
 
             chmod +x $out/bin/niks
           '';
