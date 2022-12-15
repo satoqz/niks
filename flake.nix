@@ -24,7 +24,7 @@
             cp -r *.ts $out/src
 
             cp ${pkgs.writeShellScriptBin pname ''
-              ${pkgs.deno}/bin/deno run --allow-run $SRC_PATH/cli.ts "$@"
+              exec ${pkgs.deno}/bin/deno run --allow-run $SRC_PATH/cli.ts "$@"
             ''}/bin/${pname} $out/bin
 
             wrapProgram $out/bin/${pname} \
