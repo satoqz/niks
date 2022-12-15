@@ -4,7 +4,7 @@ import {
   CompletionsCommand,
   HelpCommand,
   Table,
-} from "https://deno.land/x/cliffy@v0.25.5/mod.ts";
+} from "cliffy/mod.ts";
 
 import NixProfile from "./lib.ts";
 

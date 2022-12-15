@@ -1,35 +1,44 @@
 {
   inputs.flake-utils.url = "github:numtide/flake-utils";
+  inputs.deno2nix.url = "github:SnO2WMaN/deno2nix";
 
   outputs = {
     self,
     nixpkgs,
     flake-utils,
+    deno2nix,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
+        overlays = [deno2nix.overlays.default];
       };
-      buildInputs = [pkgs.deno];
     in rec {
-      packages = {
-        niks = pkgs.stdenv.mkDerivation {
-          pname = "niks";
-          version = "0.1.0";
-          src = ./.;
+      packages = let
+        version = "0.1.0";
+        executable = pkgs.deno2nix.mkExecutable {
+          inherit version;
+          pname = "niks-executable";
 
-          inherit buildInputs;
+          src = ./.;
+          bin = "niks";
+
+          entrypoint = "./cli.ts";
+          lockfile = "./deno.lock";
+          config = "./deno.json";
+
+          allow.run = true;
+        };
+      in {
+        niks = pkgs.stdenv.mkDerivation {
+          inherit version;
+          pname = "niks";
+          src = executable;
+
           nativeBuildInputs = [pkgs.installShellFiles];
 
-          buildPhase = ''
-            export DENO_DIR=/tmp/niks-deno-dir
-            mkdir -p $DENO_DIR
-
-            deno compile --allow-run -o niks cli.ts
-          '';
-
           installPhase = ''
-            install -Dm755 -t $out/bin niks
+            install -Dm755 -t $out/bin $src/bin/niks
             runHook postInstall
           '';
 
@@ -53,7 +62,7 @@
       };
 
       devShells.default = pkgs.mkShell {
-        inherit buildInputs;
+        buildInputs = [pkgs.deno];
       };
 
       formatter = pkgs.alejandra;
