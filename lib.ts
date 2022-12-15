@@ -33,7 +33,7 @@ export default class NixProfile {
   public static async init(): Promise<NixProfile> {
     const output = await nix("profile", "list");
 
-    const list = output.split("\n").map((row) => {
+    const list = output.split("\n").filter(Boolean).map((row) => {
       const [index, reference, _, path] = row.split(" ");
       return {
         index: parseInt(index),

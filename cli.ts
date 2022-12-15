@@ -19,6 +19,10 @@ const list = new Command()
       pkgs.map((pkg) => [name, pkg.path])
     );
 
+    if (!data.length) {
+      return console.error(colors.brightRed("No packages installed."));
+    }
+
     if (raw) {
       new Table().body(data).render();
     } else {

@@ -1,15 +1,16 @@
 # `niks`
 
 niks is an overly simplified `nix profile` wrapper that allows you to manage the
-`flake:nixpkgs` part of your profile like you would with any other package manager:
+`flake:nixpkgs` part of your profile like you would with any other package
+manager:
 
 ```sh
 niks install deno
 niks remove nodejs
 ```
 
-Packages not from nixpkgs are explicitly ignored and unsupported,
-yet support under a flag such as `--flake` may be added in the future.
+Packages not from nixpkgs are explicitly ignored and unsupported, yet support
+under a flag such as `--flake` may be added in the future.
 
 ## Running
 
@@ -67,5 +68,5 @@ In your system/home/whatever configuration:
     list, l                 - List installed packages.                    
     install, i   <pkgs...>  - Install packages.                           
     remove, r    <pkgs...>  - Remove packages.                            
-    upgrade, u   [pkgs...]  - Upgrade packages.                           
+    upgrade, u   [pkgs...]  - Upgrade packages.
 ```
