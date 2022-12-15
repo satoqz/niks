@@ -22,7 +22,7 @@
             cp -r *.ts $out/src
 
             echo "#!${pkgs.bash}/bin/bash" >> $out/bin/niks
-            echo "${pkgs.deno}/bin/deno run --allow-run $out/src/cli.ts \"\$@\"" >> $out/bin/niks
+            echo "DENO_NO_UPDATE_CHECK=1 ${pkgs.deno}/bin/deno run --allow-run $out/src/cli.ts \"\$@\"" >> $out/bin/niks
 
             chmod +x $out/bin/niks
           '';
