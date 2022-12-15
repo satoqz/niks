@@ -33,7 +33,7 @@ In your `flake.nix`:
 
 ```nix
 {
-  inputs.niks.url = "github:satoqz/niks#niks";
+  inputs.niks.url = "github:satoqz/niks";
 }
 ```
 
