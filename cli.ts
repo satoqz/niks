@@ -45,7 +45,6 @@ const install = new Command()
     const profile = await NixProfile.init();
     for (const pkg of pkgs) {
       await profile.install(pkg);
-      console.error(colors.brightGreen(`Installed package ${pkg}.`));
     }
   });
 
@@ -57,7 +56,6 @@ const remove = new Command()
     const profile = await NixProfile.init();
     for (const pkg of pkgs) {
       await profile.remove(pkg);
-      console.error(colors.brightRed(`Removed package ${pkg}.`));
     }
   });
 
@@ -73,8 +71,6 @@ const upgrade = new Command()
     for (const pkg of pkgs) {
       await profile.upgrade(pkg);
     }
-
-    console.error(colors.brightGreen(`Upgraded packages.`));
   });
 
 const root = new Command()

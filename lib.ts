@@ -4,20 +4,18 @@ const nix = async (...args: string[]): Promise<string> => {
   const command = Deno.run({
     cmd: ["nix", ...args],
     stdout: "piped",
-    stderr: "piped",
+    stderr: "inherit",
     stdin: "null",
   });
 
   const status = await command.status();
   const success = status.code == 0;
-  const output = decoder.decode(
-    await (success ? command.output() : command.stderrOutput()),
-  ).trim();
+  const output = decoder.decode(await command.output());
 
   if (success) {
     return output;
   } else {
-    throw new Error(output);
+    Deno.exit(1);
   }
 };
 
