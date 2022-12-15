@@ -12,19 +12,24 @@
       };
     in rec {
       packages = {
-        niks = pkgs.stdenv.mkDerivation {
+        niks = pkgs.stdenvNoCC.mkDerivation rec {
           pname = "niks";
           version = "0.1.0";
           src = ./.;
+
+          nativeBuildInputs = [pkgs.makeWrapper];
 
           installPhase = ''
             mkdir -p $out/src $out/bin
             cp -r *.ts $out/src
 
-            echo "#!${pkgs.bash}/bin/bash" >> $out/bin/niks
-            echo "DENO_NO_UPDATE_CHECK=1 ${pkgs.deno}/bin/deno run --allow-run $out/src/cli.ts \"\$@\"" >> $out/bin/niks
+            cp ${pkgs.writeShellScriptBin pname ''
+              ${pkgs.deno}/bin/deno run --allow-run $SRC_PATH/cli.ts "$@"
+            ''}/bin/${pname} $out/bin
 
-            chmod +x $out/bin/niks
+            wrapProgram $out/bin/${pname} \
+              --set SRC_PATH $out/src \
+              --set DENO_NO_UPDATE_CHECK 1
           '';
         };
 
