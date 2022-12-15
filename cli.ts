@@ -23,18 +23,22 @@ const list = new Command()
       return console.error(colors.brightRed("No packages installed."));
     }
 
+    const table = new Table();
+
     if (raw) {
-      new Table().body(data).render();
+      table.body(data);
     } else {
-      new Table().header([
+      table.header([
         "Name",
         "Store Path",
       ]).body(
         data.map((
           [name, path],
         ) => [colors.white(name), colors.brightBlue(path)]),
-      ).render();
+      );
     }
+
+    table.sort().render();
   });
 
 const install = new Command()
