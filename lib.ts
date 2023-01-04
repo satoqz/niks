@@ -31,16 +31,20 @@ export default class NixProfile {
   public static async init(): Promise<NixProfile> {
     const output = await nix("profile", "list");
 
-    const list = output.split("\n").filter(Boolean).map((row) => {
-      const [index, reference, _, path] = row.split(" ");
-      return {
-        index: parseInt(index),
-        reference,
-        path,
-      };
-    }).filter(({ reference }) =>
-      reference.startsWith("flake:nixpkgs#legacyPackages")
-    );
+    const list = output
+      .split("\n")
+      .filter(Boolean)
+      .map((row) => {
+        const [index, reference, _, path] = row.split(" ");
+        return {
+          index: parseInt(index),
+          reference,
+          path,
+        };
+      })
+      .filter(({ reference }) =>
+        reference.startsWith("flake:nixpkgs#legacyPackages")
+      );
 
     const packages = new Map<string, NixPackage[]>();
 
@@ -78,13 +82,16 @@ export default class NixProfile {
       removed.push(pkg);
 
       this.packages.forEach((pkgs) =>
-        pkgs.filter(({ index }) => index > pkg.index).forEach((pkg) =>
-          pkg.index--
-        )
+        pkgs
+          .filter(({ index }) => index > pkg.index)
+          .forEach((pkg) => pkg.index--)
       );
     }
 
-    this.packages.set(name, pkgs.filter((pkg) => !removed.includes(pkg)));
+    this.packages.set(
+      name,
+      pkgs.filter((pkg) => !removed.includes(pkg)),
+    );
   }
 
   public async install(name: string) {
@@ -102,10 +109,6 @@ export default class NixProfile {
       throw new Error(`No packages named "${name}" are installed.`);
     }
 
-    await nix(
-      "profile",
-      "upgrade",
-      ...pkgs.map((pkg) => pkg.index.toString()),
-    );
+    await nix("profile", "upgrade", ...pkgs.map((pkg) => pkg.index.toString()));
   }
 }
